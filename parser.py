@@ -1,6 +1,15 @@
 import json
 import os
+import re
 from bs4 import BeautifulSoup
+
+def normalize_whitespace(text):
+    """Normalize whitespace: collapse multiple spaces/newlines into single spaces."""
+    if text is None:
+        return None
+    # Replace newlines and multiple spaces with a single space
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
 
 def parse_courses(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -14,16 +23,16 @@ def parse_courses(html):
         number_tag = container.find('span', class_='courseNumber')
         course_data['course_number'] = number_tag.get_text(strip=True).replace(':', '') if number_tag else None
 
-        # 2. Extract Description 
+        # 2. Extract Description
         # Logic: Find the div, then check if 'noDisplay' is NOT in its class list
         desc_tag = container.find('div', class_='courseDescription')
-        
+
         description_text = None
         if desc_tag:
             classes = desc_tag.get('class', [])
             if 'noDisplay' not in classes:
-                description_text = desc_tag.get_text(strip=True)
-        
+                description_text = normalize_whitespace(desc_tag.get_text())
+
         course_data['course_description'] = description_text
 
         extracted_data.append(course_data)
