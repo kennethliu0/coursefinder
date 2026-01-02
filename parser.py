@@ -33,6 +33,9 @@ def parse_courses(html):
             if 'noDisplay' not in classes:
                 description_text = normalize_whitespace(desc_tag.get_text())
 
+        if (description_text == None):
+            continue # skip classes with missing descriptions
+
         course_data['course_description'] = description_text
 
         extracted_data.append(course_data)
